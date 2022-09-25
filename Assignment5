@@ -1,0 +1,200 @@
+//Employee data project with file stream
+#include<iostream>
+#include<fstream>
+#include<conio.h>
+#include<process.h>
+#include<stdio.h>
+using namespace std;
+class Employee
+{
+ int no;
+ char name[20];
+ int psw;
+ int amt;
+
+ public:
+ void getdata();
+ void display();
+ int getno() {return no;}
+}e;
+
+void Employee::getdata()
+{
+ cout<<"Enter Employee No. : ";
+ cin>>no;
+ cout<<"Enter Employee Name     : ";
+ cin>>name;
+// cin.getline(name,20);
+// gets(name);
+ cout<<"Enter Employee Password    : ";
+ cin>>psw;
+ cout<<"Enter Employee Amount: ";
+ cin>>amt;
+
+}
+void Employee::display()
+{
+ cout<<"=================================================\n";
+ cout<<"Employee No. : "<<no<<"\tEmployee Name  : "<<name<<"\n";
+ cout<<"Employee Password  : "<<psw <<"\tAmount : "<<amt;
+// cout<<"=================================================\n";
+}
+
+void clrscr()
+{
+  system("cls");
+}
+
+// functions for menu
+void menu();
+void search();
+void add();
+void displayall();
+void Modify();
+void options();
+
+
+int main()
+{
+
+ std::string name;
+ int no,psw,amt;
+
+ fstream fio("employee.txt",ios::in|ios::out|ios::binary);
+ if(fio.is_open())
+ {
+     while(fio>>no>>name>>psw>>amt)
+     {
+         std::cout<<no<<"*"<<name<<"*"<<psw<<"*"<<amt<<'\n';
+
+     }
+     fio.close();
+ }
+ clrscr();
+ menu();
+// fio.close();
+ getch();
+ return 0;
+}
+
+void options()
+{
+ cout<<"=================================================\n";
+ cout<<"\n\t...Employee Record PROGRAM...\n";
+ cout<<"\n\t...Created By Zin Min Htut...\n";
+ cout<<"\t0. Exit...\n";
+ cout<<"\t1. Add the record...\n";
+ cout<<"\t2. Search the record...\n";
+ cout<<"\t3. Display all records...\n";
+ cout<<"\t4. Modify the Record...\n";
+
+ cout<<"\nEnter Your Choice  : ";
+
+  cout<<"=================================================\n";
+}
+
+void menu()
+{
+ int ch;
+ options();
+ cin>>ch;
+ while(ch)
+ {
+   switch(ch)
+   {
+  case 1: add(); break;
+  case 2: search(); break;
+  case 3: displayall(); break;
+    case 4: Modify(); break;
+  default: cout<<"Wrong Input please enter the correct value....";
+   }
+   system("pause");
+   clrscr();
+   options();
+   cin>>ch;
+ }
+}
+
+void search()
+{
+ ifstream fin("employee.txt",ios::in|ios::binary);
+ int no,i=0;
+ char found='n';
+ cout<<"\nEnter Employee No. to be searched : ";
+ cin>>no;
+
+ while(fin.read((char*)&e,sizeof(e)))
+ {
+  if(e.getno()==no)
+  {
+   e.display();
+   found='y';
+  }
+  i++;
+ }
+ if(found=='n') cout<<"\nThe Employee No. "<<no<<" is not in the file...\n";
+ fin.close();
+}
+
+//For Displaying the all data of the employee.
+void displayall()
+{
+ ifstream fin("employee.txt",ios::in|ios::binary);
+ while(fin.read((char*)&e,sizeof(e)))
+ {
+  e.display();
+ }
+ fin.close();
+// int x=gcount();
+// cout<<"\n"<<x<<" Bytes read from file...\n";
+}
+
+//For adding the data into the file.
+void add()
+{
+ char ch='y';
+ ofstream fout("employee.txt",ios::out|ios::app|ios::binary);
+ while(ch=='y'||ch=='Y')
+ {
+  e.getdata();
+  fout.write((char*)&e,sizeof(e));
+  cout<<"\nDo you want to add more(y/n)? : ";
+  cin>>ch;
+ }
+
+ cout<<"\nData Appended and Transferred to file...\n";
+ fout.close();
+}
+
+
+void Modify()
+{
+ fstream fio("employee.txt",ios::in|ios::out|ios::binary);
+ int no;
+ char found='n';
+ fio.seekg(0);
+ cout<<"\nEnter the Employee No. whose record is to be modified: ";
+ cin>>no;
+
+ while(fio)
+// while(fio.read((char*)&e,sizeof(e)))
+ {
+ {
+// fio.read((char*)&e,sizeof(e));
+   int loc=fio.tellg();
+   fio.read((char*)&e,sizeof(e));
+//   fio.read((char*)&e,sizeof(e));
+   if(e.getno()==no)
+   {
+  e.getdata();
+  found='y';
+  fio.seekg(loc);
+  fio.write((char*)&e,sizeof(e));
+  cout<<"\nYour record of Employee No. "<<no
+      <<" has been updated....";
+   }
+ }
+ if(found=='n') cout<<"\nThe Class "<<no<<" is not in the file...\n";
+ fio.close();
+}
+}
